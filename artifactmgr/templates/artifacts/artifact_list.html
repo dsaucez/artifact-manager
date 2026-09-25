@@ -1,5 +1,5 @@
-{% extends 'base.html' %}
-{% load static artifact_tags django_bootstrap5 %}
+{% extends 'artifactmgr/base.html' %}
+<!-- { % load static artifact_tags django_bootstrap5 %} -->
 {% block title %}
     FABRIC Artifact Manager
 {% endblock %}
@@ -14,7 +14,7 @@
             <span class="subtitle">Ordered by last updated</span>
         </div>
         <form method="get">
-            {% csrf_token %}
+            <!-- { % csrf_token %} -->
             <div class="d-flex flex-row justify-content-between align-items-center gap-2 mb-3">
                 {% if search %}
                     <input id="search" type="text" name="search"
@@ -32,7 +32,7 @@
                         <i class="fa fa-magnifying-glass me-1"></i> Search
                     </button>
                     {% if api_user.is_authenticated %}
-                        <a href="{% url 'artifact_create' %}" class="btn btn-success btn-fabric text-nowrap"
+                        <a href="{ % url 'artifact_create' %}" class="btn btn-success btn-fabric text-nowrap"
                            title="Create a new shareable artifact"
                            data-bs-toggle="tooltip" data-bs-placement="bottom">
                             <i class="fa fa-plus me-1"></i> Create Artifact
@@ -41,41 +41,42 @@
                 </div>
             </div>
         </form>
-        {% if artifacts.results|length == 0 %}
+        {% if artifacts["items"]|length == 0 %}
             <div class="empty-state">
                 <i class="fa-solid fa-magnifying-glass fa-2x"></i>
                 No artifacts found for the given criteria.
             </div>
         {% endif %}
-        {% for artifact in artifacts.results %}
+        {% for artifact in artifacts["items"] %}
             <div class="pub-card">
                 <div class="pub-title">
-                    <a href="{% url 'artifact_detail' uuid=artifact.uuid %}">
-                        {{ artifact.title }}
+                    <a href="artifact_detail?internal_identifier={{artifact.internalIdentifier}}">
+                        {{ artifact.name }}
                     </a>
                 </div>
-                <div class="pub-meta">{{ artifact.description_short }}</div>
+                <div class="pub-meta">{{ artifact.description[:200] ~ '...' if artifact.description|length > 200 else artifact.description }}
+</div>
                 <div class="d-flex flex-row justify-content-between align-items-center mt-2" style="font-size: 0.85rem;">
                     <div class="pub-meta">
                         <span title="Views - total across all versions">
-                            <em class="fa-solid fa-eye"></em> {{ artifact.artifact_views }}
+                            <em class="fa-solid fa-eye"></em> {{ artifact.numberOfVisits }}
                         </span>&nbsp;&nbsp;
                         <span title="Downloads - total across all versions: active (retired)">
-                            <em class="fa-solid fa-download"></em> {{ artifact.artifact_downloads_active }}
-                            ({{ artifact.artifact_downloads_retired }})
+                            <em class="fa-solid fa-download"></em> {{ artifact.numberOfDownloads }}
+                            ({{ artifact.artifact_downloads_retired | default(0) }})
                         </span>&nbsp;&nbsp;
-                        <span title="Versions - number of published versions">
+                        <!-- <span title="Versions - number of published versions">
                             <em class="fa-regular fa-clone"></em> {{ artifact.number_of_versions }}
-                        </span>&nbsp;&nbsp;
-                        <span class="pub-meta" title="Last Updated">
-                            {{ artifact.modified|normalize_date_to_utc }}
+                        </span>&nbsp;&nbsp; -->
+                        <span class="pub-meta" title="System Creation Date">
+                            {{ artifact.createdAt | normalize_date_to_utc }}
                         </span>
                     </div>
-                    {% if artifact.tags %}
+                    {% if artifact.keywords + artifact.scientificDomains + artifact.scientificSubdomains %}
                         <div>
-                            {% for tag in artifact.tags %}
+                            {% for tag in artifact.keywords + artifact.scientificDomains + artifact.scientificSubdomains %}
                                 <span class="pub-badge">
-                                    <a href="{% url 'artifact_list' %}?search={{ tag }}">{{ tag }}</a>
+                                    <a href="{ % url 'artifact_list' %}?search={{ tag }}">{{ tag }}</a>
                                 </span>
                             {% endfor %}
                         </div>
@@ -89,11 +90,11 @@
                         title="Go to page {{ prev_page }}"
                         data-bs-toggle="tooltip" data-bs-placement="left">
                     {% if search %}
-                        <a href="{{ artifacts.previous }}&search={{ search }}" class="unlink">
+                        <a href="?page_index={{ artifacts.currentPageIndex - 1 }}&search={{ search }}" class="unlink">
                             <em class="fa-solid fa-angles-left"></em> Page {{ prev_page }}
                         </a>
                     {% else %}
-                        <a href="{{ artifacts.previous }}" class="unlink">
+                        <a href="?page_index={{ artifacts.currentPageIndex - 1 }}" class="unlink">
                             <em class="fa-solid fa-angles-left"></em> Page {{ prev_page }}
                         </a>
                     {% endif %}
@@ -105,17 +106,17 @@
                     <em class="fa-solid fa-angles-left"></em>
                 </button>
             {% endif %}
-            <span class="results-count">Results: {{ item_range }} of {{ count }}</span>
+            <span class="results-count">Results: {{ item_range }} of {{ artifacts.total }}</span>
             {% if next_page %}
                 <button type="button" class="btn btn-secondary btn-sm"
                         title="Go to page {{ next_page }}"
                         data-bs-toggle="tooltip" data-bs-placement="right">
                     {% if search %}
-                        <a href="{{ artifacts.next }}&search={{ search }}" class="unlink">
+                        <a href="?page_index={{ artifacts.currentPageIndex + 1 }}&search={{ search }}" class="unlink">
                             Page {{ next_page }} <em class="fa-solid fa-angles-right"></em>
                         </a>
                     {% else %}
-                        <a href="{{ artifacts.next }}" class="unlink">
+                        <a href="?page_index={{ artifacts.currentPageIndex + 1 }}" class="unlink">
                             Page {{ next_page }} <em class="fa-solid fa-angles-right"></em>
                         </a>
                     {% endif %}
@@ -133,11 +134,11 @@
         <hr>
         <div class="debug-block">
             <pre><strong>artifacts</strong>:
-{{ artifacts|json_pretty }}</pre>
+{{ artifacts }}</pre>
         </div>
         <div class="debug-block mt-2">
             <pre><strong>api_user</strong>:
-{{ api_user|json_pretty }}</pre>
+{{ api_user }}</pre>
         </div>
     {% endif %}
 {% endblock %}

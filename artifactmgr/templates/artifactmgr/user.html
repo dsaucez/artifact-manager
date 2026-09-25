@@ -1,0 +1,325 @@
+
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="utf-8"/>
+    <!-- Colour theme.
+         This runs before any stylesheet or markup so the stored choice is on
+         <html> at first paint; deferring it to DOMContentLoaded would flash the
+         light theme on every navigation. Bootstrap 5.3 and main.css both key off
+         data-bs-theme, which is always the resolved theme ("light" or "dark").
+         The user's choice, which may be "system", is kept alongside it in
+         data-am-theme-choice. -->
+    <script>
+        (function () {
+            var KEY = 'am-theme';
+            var media = window.matchMedia('(prefers-color-scheme: dark)');
+            var choice;
+            try {
+                choice = window.localStorage.getItem(KEY);
+            } catch (e) {
+                // Storage can throw outright (Safari private mode, blocked cookies).
+                choice = null;
+            }
+            if (choice !== 'light' && choice !== 'dark') {
+                choice = 'system';
+            }
+
+            function apply() {
+                var resolved = choice === 'system' ? (media.matches ? 'dark' : 'light') : choice;
+                document.documentElement.setAttribute('data-bs-theme', resolved);
+                document.documentElement.setAttribute('data-am-theme-choice', choice);
+            }
+
+            window.amTheme = {
+                get: function () {
+                    return choice;
+                },
+                set: function (next) {
+                    choice = next;
+                    try {
+                        window.localStorage.setItem(KEY, next);
+                    } catch (e) { /* not fatal: the choice just won't outlive the page */ }
+                    apply();
+                }
+            };
+
+            apply();
+            media.addEventListener('change', function () {
+                if (choice === 'system') {
+                    apply();
+                }
+            });
+        })();
+    </script>
+    <!-- Load static files-->
+    
+    
+    
+    
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" rel="stylesheet">
+    <script crossorigin="anonymous" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    
+
+
+    
+    <script src="../static/fontawesomefree/js/all.min.js"></script>
+
+    <!-- Google Fonts: Montserrat + Roboto -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- other stylesheets / sources -->
+    <link rel="stylesheet" href="../../server/static/css/main.css"/>
+    <title>
+        
+    SLICES-RI Artifact Manager
+
+    </title>
+    
+    
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-fabric px-2" data-bs-theme="dark">
+    <a class="navbar-brand navbar" href="/">
+        <img
+                src="../../server/static/images/logo/fabric-brand.png"
+                alt="fabric logo"
+                height="30"
+        />
+        Artifact Manager
+    </a>
+    <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#navbarNav"
+            aria-controls="navbarNav"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+    >
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav me-auto order-0">
+            <li class="nav-item">
+                <a class="nav-link" href="/artifacts/">Artifacts</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/artifacts/authors/">Authors</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/artifacts/projects/">Projects</a>
+            </li>
+            
+        </ul>
+        <div class="navbar-nav nav-item ms-auto order-4">
+            <div class="dropdown">
+                <button
+                        class="btn btn-outline-light dropdown-toggle theme-toggle"
+                        type="button"
+                        id="themeMenuButton"
+                        data-bs-toggle="dropdown"
+                        aria-expanded="false"
+                        aria-label="Color theme"
+                        title="Color theme"
+                >
+                    
+                    <i class="fa fa-sun" data-theme-icon="light"></i>
+                    <i class="fa fa-moon" data-theme-icon="dark"></i>
+                    <i class="fa fa-circle-half-stroke" data-theme-icon="system"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="themeMenuButton" role="menu">
+                    <li role="none">
+                        <button class="dropdown-item" type="button" role="menuitemradio"
+                                aria-checked="false" data-set-theme="light">
+                            <i class="fa fa-sun fa-fw me-2"></i>Light
+                            <i class="fa fa-check fa-fw ms-2 theme-check"></i>
+                        </button>
+                    </li>
+                    <li role="none">
+                        <button class="dropdown-item" type="button" role="menuitemradio"
+                                aria-checked="false" data-set-theme="dark">
+                            <i class="fa fa-moon fa-fw me-2"></i>Dark
+                            <i class="fa fa-check fa-fw ms-2 theme-check"></i>
+                        </button>
+                    </li>
+                    <li role="none">
+                        <button class="dropdown-item" type="button" role="menuitemradio"
+                                aria-checked="false" data-set-theme="system">
+                            <i class="fa fa-circle-half-stroke fa-fw me-2"></i>System
+                            <i class="fa fa-check fa-fw ms-2 theme-check"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="navbar-nav nav-item order-5">
+            
+                <a class="nav-link" href="/login">
+                    <button class="btn btn-outline-light"
+                            title="Sign in with CILogon"
+                            data-bs-toggle="tooltip" data-bs-placement="bottom">
+                        Login
+                    </button>
+                </a>
+            
+        </div>
+    </div>
+</nav>
+
+<main class="container">
+    
+    <div class="container w-85">
+        
+            <div class="page-header">
+                <h3>FABRIC Artifact Manager</h3>
+            </div>
+            <div class="detail-card" style="font-size: 0.92rem;">
+                <div style="padding: 1.25rem 1.5rem;">
+                    <p>
+                        The Artifacts Manager is a platform for FABRIC users to safely store project related artifacts in a
+                        shareable way.
+                    </p>
+                    <p>
+                        Artifacts can be stored and shared at three permission levels:
+                    </p>
+                    <ul>
+                        <li>
+                            <strong>author</strong>: Only the artifact authors can view the artifact and download content versions
+                        </li>
+                        <li>
+                            <strong>project</strong>: Artifact authors as well as project personnel (determined by the referenced FABRIC
+                            project) can view the artifact and download content versions
+                        </li>
+                        <li>
+                            <strong>public</strong>: All users (including anonymous ones) can view the artifact and download content versions
+                        </li>
+                    </ul>
+                    <div class="alert alert-danger py-2 mt-3 mb-2" role="alert">
+                        <strong>Reminder</strong>: Authors are always the only users that can edit the artifact
+                        and add new content versions
+                    </div>
+                    <div class="alert alert-danger py-2 mb-2" role="alert">
+                        <strong>Reminder</strong>: Contents of the "artifact" are the responsibility of the user
+                        to manage, and care should be taken to not include private keys, tokens, or other secret information
+                        (FABRIC does not review these files, but does retain the right to remove inappropriate files)
+                    </div>
+                    <div class="alert alert-info py-2 mb-0" role="alert">
+                        <strong>Note</strong>: Existing FABRIC users will be recognized by the system, and denoted
+                        as such following a successful login. Non-FABRIC users will always be denoted as an "AnonymousUser",
+                        regardless of how many times they attempt to login.
+                    </div>
+                </div>
+            </div>
+        
+        
+        
+        
+        <div class="page-header mt-4">
+            <h4>User Information</h4>
+            <span class="subtitle">AnonymousUser</span>
+        </div>
+        <div class="detail-card">
+            <div class="detail-row">
+                <div class="detail-label">Name</div>
+                <div class="detail-value"><strong>AnonymousUser</strong></div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Affiliation</div>
+                <div class="detail-value"><strong>None</strong></div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Email</div>
+                <div class="detail-value"><strong>None</strong></div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">UUID</div>
+                <div class="detail-value"><strong>00000000-0000-0000-0000-000000000000</strong></div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">CILogon ID</div>
+                <div class="detail-value"><strong>None</strong></div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">FABRIC Roles</div>
+                <div class="detail-value">
+                    
+                        <span class="pub-badge"></span>
+                    
+                </div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">FABRIC Projects</div>
+                <div class="detail-value">
+                    
+                        <span class="pub-badge-project pub-badge"></span>
+                    
+                </div>
+            </div>
+        </div>
+        <p class="sm-font" style="color: #838385;">
+            <strong>DISCLAIMER</strong>: The code herein may not be up to date nor compliant with the most recent package
+            and/or security notices. The frequency at which this code is reviewed and updated is based solely on the
+            lifecycle of the project for which it was written to support, and is not actively maintained outside of
+            that scope. Use at your own risk.
+        </p>
+    </div>
+    
+
+</main>
+
+<link rel="stylesheet" href="../../server/static/css/footer.css">
+<div class="footer">
+    <div class="footer-top">
+        <a
+                href="https://portal.fabric-testbed.net"
+                target="_blank"
+                rel="noreferrer"
+                class="link"
+        >&copy; FABRIC 2026</a>
+        
+        <span class="footer-version" title="Artifact Manager release">v1.11.0</span>
+    </div>
+    <div class="sm-font">
+        FABRIC is supported in part by
+        <a
+                href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1935966&HistoricalAwards=false"
+                target="_blank"
+                rel="noreferrer"
+                class="link"
+        ><b>a Mid-Scale RI-1 NSF award under Grant No. 1935966.</b></a>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Theme switcher. Which entry looks selected, and which icon the button
+        // shows, is decided in CSS from data-am-theme-choice on <html> -- so the
+        // menu is already correct on first paint. This only records the click and
+        // keeps aria-checked in step.
+        function syncThemeAria() {
+            var choice = window.amTheme.get();
+            document.querySelectorAll('[data-set-theme]').forEach(function (el) {
+                el.setAttribute('aria-checked', el.dataset.setTheme === choice ? 'true' : 'false');
+            });
+        }
+
+        document.querySelectorAll('[data-set-theme]').forEach(function (el) {
+            el.addEventListener('click', function () {
+                window.amTheme.set(el.dataset.setTheme);
+                syncThemeAria();
+            });
+        });
+        syncThemeAria();
+
+        // Initialize Bootstrap tooltips
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (el) { return new bootstrap.Tooltip(el); });
+    });
+</script>
+</body>
+</html>
