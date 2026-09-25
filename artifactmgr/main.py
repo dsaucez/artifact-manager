@@ -76,6 +76,7 @@ async def search_objects(search=None, page_index: int = 0, page_size: int = 20) 
         "paginate": True,
         "pageIndex": page_index,
         "pageSize": page_size,
+        "advancedQuery": 'Keywords ^$ "post5g-blueprint-artifact"',
     }
 
     if search:
@@ -113,7 +114,7 @@ async def list_artifacts(
     infos = {
         "app_version": app.version,
         "now": datetime.datetime.now(),
-        "message": "This is a test",
+        # "message": "This is a test",
         "api_user": api_user,
         "artifacts": data,
         "debug": debug,
@@ -146,7 +147,7 @@ async def get_artifact(internal_id: int, debug: bool = False):
     infos = {
         "app_version": app.version,
         "now": datetime.datetime.now(),
-        "message": "This is a test detail",
+        # "message": "This is a test detail",
         "api_user": api_user,
         "artifact": data,
         "show_authors": True,
