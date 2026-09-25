@@ -1,15 +1,12 @@
 import datetime
 import json
-
-# from datetime import timedelta, timezone
 from logging import Logger
 from typing import Union
 
 import httpx
 import humanize
-from dateutil import parser
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import HTMLResponse
+from fastapi import FastAPI
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from jinja2 import Environment, FileSystemLoader
 from pydantic import BaseModel
@@ -56,6 +53,12 @@ def humanize_bytes(size: int):
 
 app = FastAPI(version="v0.0.1")
 app.mount("/static", StaticFiles(directory="server/static"), name="static")
+
+
+@app.get("/")
+async def root():
+    return RedirectResponse(url="/artifacts", status_code=307)
+
 
 env = Environment(loader=FileSystemLoader("templates"))
 env.filters["normalize_date_to_utc"] = normalize_date_to_utc
