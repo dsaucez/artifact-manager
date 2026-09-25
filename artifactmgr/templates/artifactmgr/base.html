@@ -67,7 +67,7 @@
     
     
 
-    <script src="server/static/fontawesomefree/js/all.min.js"></script>
+    <script src="/static/fontawesomefree/js/all.min.js"></script>
 
     <!-- Google Fonts: Montserrat + Roboto -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -75,10 +75,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
 
     <!-- other stylesheets / sources -->
-    <link rel="stylesheet" href="server/static/css/main.css"/>
+    <link rel="stylesheet" href="/static/css/main.css"/>
     <title>
         {% block title %}
-            FABRIC Artifact Manager
+            SLICES-RI Artifact Manager
         {% endblock %}
     </title>
     {% block head %}
@@ -90,7 +90,7 @@
     {% block content %}
     {% endblock %}
 </main>
-<!-- { % include 'footer.html' %} -->
+{% include 'artifactmgr/footer.html' %}
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         // Theme switcher. Which entry looks selected, and which icon the button

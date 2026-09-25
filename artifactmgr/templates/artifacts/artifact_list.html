@@ -1,7 +1,7 @@
 {% extends 'artifactmgr/base.html' %}
 <!-- { % load static artifact_tags django_bootstrap5 %} -->
 {% block title %}
-    FABRIC Artifact Manager
+    SLICES-RI Artifact Manager
 {% endblock %}
 
 {% block content %}
@@ -11,7 +11,7 @@
     <div class="container w-85">
         <div class="page-header">
             <h2>Artifacts</h2>
-            <span class="subtitle">Ordered by last updated</span>
+            <!-- <span class="subtitle">Ordered by last updated</span> -->
         </div>
         <form method="get">
             <!-- { % csrf_token %} -->
@@ -50,7 +50,7 @@
         {% for artifact in artifacts["items"] %}
             <div class="pub-card">
                 <div class="pub-title">
-                    <a href="artifact_detail?internal_identifier={{artifact.internalIdentifier}}">
+                    <a href="/artifacts/{{artifact.internalIdentifier}}">
                         {{ artifact.name }}
                     </a>
                 </div>
@@ -76,7 +76,7 @@
                         <div>
                             {% for tag in artifact.keywords + artifact.scientificDomains + artifact.scientificSubdomains %}
                                 <span class="pub-badge">
-                                    <a href="{ % url 'artifact_list' %}?search={{ tag }}">{{ tag }}</a>
+                                    <a href="?search={{ tag }}">{{ tag }}</a>
                                 </span>
                             {% endfor %}
                         </div>
@@ -134,11 +134,11 @@
         <hr>
         <div class="debug-block">
             <pre><strong>artifacts</strong>:
-{{ artifacts }}</pre>
+{{ artifacts | json_pretty | safe }}</pre>
         </div>
         <div class="debug-block mt-2">
             <pre><strong>api_user</strong>:
-{{ api_user }}</pre>
+{{ api_user | json_pretty |safe }}</pre>
         </div>
     {% endif %}
 {% endblock %}

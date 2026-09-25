@@ -1,26 +1,40 @@
-{% load static %}
-<link rel="stylesheet" href="{% static 'css/footer.css' %}">
+
+<link rel="stylesheet" href="/static/css/footer.css">
 <div class="footer">
     <div class="footer-top">
         <a
-                href="https://portal.fabric-testbed.net"
+                href="https://www.slices-ri.eu/"
                 target="_blank"
                 rel="noreferrer"
                 class="link"
-        >&copy; FABRIC 2026</a>
-        {% comment %}
-            Which release is deployed, on every page. settings.APP_VERSION is read
-            from pyproject.toml and reaches here via a context processor.
-        {% endcomment %}
-        <span class="footer-version" title="Artifact Manager release">v{{ app_version }}</span>
+        >&copy; SLICES-RI {{ now.strftime('%Y') }}</a>
+        <span class="footer-version" title="Artifact Manager release">{{ app_version }}</span>
     </div>
     <div class="sm-font">
-        FABRIC is supported in part by
+        This project has received funding from 
         <a
-                href="https://www.nsf.gov/awardsearch/showAward?AWD_ID=1935966&HistoricalAwards=false"
+                href="https://cordis.europa.eu/project/id/101287692"
                 target="_blank"
                 rel="noreferrer"
                 class="link"
-        ><b>a Mid-Scale RI-1 NSF award under Grant No. 1935966.</b></a>
+        ><b>the European Union’s Horizon Europe Research and Innovation Programme under the Grant Agreement SLICES-IP – GA-101287692.</b></a>
+    </div>
+    <div class="sm-font">
+        This work was partially supported by
+        <a
+                href="https://anr.fr/ProjetIA-22-PEFT-0011"
+                target="_blank"
+                rel="noreferrer"
+                class="link"
+        ><b>the French National Research Agency under the France 2030 label (NF-Plateforme XG ANR-22-PEFT-00011).</b></a>
+    </div>
+    <div class="sm-font">
+        This work is based on a fork of 
+        <a
+                href="https://github.com/fabric-testbed/artifact-manager"
+                target="_blank"
+                rel="noreferrer"
+                class="link"
+        >the FABRIC Artifact Manager</a> &copy; FABRIC 2026.
     </div>
 </div>

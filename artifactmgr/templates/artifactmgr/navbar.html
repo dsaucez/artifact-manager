@@ -1,9 +1,9 @@
 <nav class="navbar navbar-expand-lg navbar-fabric px-2" data-bs-theme="dark">
-    <a class="navbar-brand navbar" href="{ % url 'home' %}">
+    <a class="navbar-brand navbar" href="/artifacts/">
         <img
-                src="server/static/images/logo/slicesri-color.png"
+                src="/static/images/logo/slicesri-color.png"
                 alt="fabric logo"
-                height="100"
+                height="30"
         />
         Artifact Manager
     </a>
@@ -21,14 +21,14 @@
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav me-auto order-0">
             <li class="nav-item">
-                <a class="nav-link" href="{ % url 'artifact_list' %}">Artifacts</a>
+                <a class="nav-link" href="/artifacts/">Artifacts</a>
             </li>
-            <li class="nav-item">
+            <!-- <li class="nav-item">
                 <a class="nav-link" href="{ % url 'author_list' %}">Authors</a>
-            </li>
-            <li class="nav-item">
+            </li> -->
+            <!-- <li class="nav-item">
                 <a class="nav-link" href="{ % url 'project_list' %}">Projects</a>
-            </li>
+            </li> -->
             {% if api_user.is_authenticated %}
                 <li class="nav-item">
                     <a
