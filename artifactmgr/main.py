@@ -162,7 +162,7 @@ async def get_artifact(internal_id: int, debug: bool = False):
 
 
 @app.get("/artifacts/create/", response_class=HTMLResponse)
-async def create_artifact(internal_id: int, debug: bool = False):
+async def create_artifact(debug: bool = False):
     template = env.get_template("artifacts/artifact_create.html")
 
     infos = {
