@@ -13,6 +13,13 @@ from jinja2 import Environment, FileSystemLoader
 from pydantic import BaseModel, EmailStr, Field, constr
 
 
+def now() -> str:
+    """Return the current UTC time in ISO 8601 format with microseconds."""
+    return datetime.datetime.now(datetime.timezone.utc).strftime(
+        "%Y-%m-%dT%H:%M:%S.%fZ"
+    )
+
+
 class ApiUser(BaseModel):
     is_authenticated: bool = False
     can_create_artifact: bool = True
@@ -84,7 +91,7 @@ env.filters["json_pretty"] = json_pretty
 # Dummy
 api_user = ApiUser(
     firstName="Damien",
-    lastName="SAUCEZ",
+    lastName="Saucez",
     email="Damien.Saucez@inria.fr",
     orcId=None,
     organization="Inria",
@@ -236,7 +243,6 @@ async def submit_artifact(
         else None
     )
 
-    print(file)
     body = json.loads("""
     {"$type": "Dataset", "identifier": "test-url-edit", "systemCreationDate": null, "internalIdentifier": null, "alternateIdentifier": null, "downloadUrl": null, "creators": [{"email": "Damien.Saucez@inria.fr", "firstName": "Damien", "lastName": "SAUCEZ", "orcId": null, "organization": "INRIA;INRIA", "phone": null, "position": null, "website": null}], "name": "", "description": "", "resourceType": "Dataset", "subjects": [], "keywords": [], "createdAt": "2026-11-09T12:49:15.719774Z", "version": "1.0", "metadataProfile": null, "contributors": [], "accessType": "Remote", "accessMode": "Free", "requiredObjects": [], "relatedObjects": [], "primaryLanguages": [], "otherLanguages": [], "contact": null, "publicContact": null, "rights": "", "rightsUri": null, "accessRights": "", "license": "BSD-3-Clause", "licenseUri": null, "copyrightsHolder": "Damien SAUCEZ", "confidentialityDeclaration": null, "specialPermissions": null, "restrictions": null, "citationRequirements": null, "conditions": null, "disclaimer": null, "provenance": null, "createdBy": null, "numberOfVisits": 0, "numberOfDownloads": 0, "paymentModel": null, "pricing": null, "scientificDomains": ["networks"], "scientificSubdomains": ["network protocols"], "address": null, "dateTimeStart": "2026-11-09T12:49:15.719774Z", "dateTimeEnd": "2026-11-09T12:49:15.719774Z", "locations": [], "byteSize": 0, "duration": null, "format": "", "medium": "", "compressionFormat": null, "fileMetadata": "", "dataStandard": null, "encodingFormat": null, "statistics": null}
     """)
@@ -250,6 +256,8 @@ async def submit_artifact(
             "organization": api_user.organization,
         }
     ]
+    body["copyrightsHolder"] = f"{api_user.firstName} {api_user.lastName}"
+
     body["identifier"] = uuid4()
     body["name"] = artifact["name"]
     body["description"] = artifact["description"]
@@ -262,5 +270,10 @@ async def submit_artifact(
     if file:
         body["byteSize"] = file.size
         body["format"] = file.content_type
+
+    _now = now()
+    body["createdAt"] = _now
+    body["dateTimeStart"] = _now
+    body["dateTimeEnd"] = _now
 
     return body
