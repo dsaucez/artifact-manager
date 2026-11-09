@@ -1,8 +1,7 @@
-{% extends 'base.html' %}
-{% load static django_bootstrap5 artifact_tags %}
-
+{% extends 'artifactmgr/base.html' %}
+<!-- { % load static artifact_tags django_bootstrap5 %} -->
 {% block title %}
-    FABRIC Artifact Manager
+    SLICES-RI Artifact Manager
 {% endblock %}
 
 {% block content %}
@@ -12,108 +11,166 @@
     {% if api_user.is_authenticated %}
         {% if api_user.can_create_artifact %}
             <div class="container w-85">
-                <div class="page-header">
-                    <h3>Create Artifact</h3>
+        <div class="d-flex flex-row justify-content-between align-items-start mb-3">
+            <div>
+                <h2 style="margin-bottom: 0.25rem;">Create Artifact</h2>
+            </div>
+            <div class="action-row">
+                <a href="/artifacts/" class="btn btn-secondary btn-fabric"
+                   title="Return to artifact list"
+                   data-bs-toggle="tooltip" data-bs-placement="bottom">Back</a>
+            </div>
+        </div>
+
+        <form id="form" method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="detail-card">
+                <div class="detail-row">
+                    <label class="detail-label" for="artifact-name">Name</label>
+                    <div class="detail-value">
+                        <input id="artifact-name" class="form-control" type="text" name="name"
+                               maxlength="255" required>
+                    </div>
                 </div>
-                <div class="form-card">
-                    <form id="form" method="POST" class="form-group">
-                        {% csrf_token %}
-                        <p>
-                            {{ form.title.label_tag }} {{ form.title }}
-                        </p>
-                        <p>
-                            {{ form.description_short.label_tag }} {{ form.description_short }}
-                        </p>
-                        <p>
-                            {{ form.description_long.label_tag }} {{ form.description_long }}
-                        </p>
-                        <p>
-                            {{ form.visibility.label_tag }} {{ form.visibility }}
-                        </p>
-                        <hr class="form-divider">
-                        <p>
-                            {{ form.show_project }} {{ form.show_project.label_tag }}
-                        </p>
-                        <p>
-                            {{ form.project_uuid.label_tag }} {{ form.project_uuid }}
-                        </p>
-                        <p>
-                            {{ form.tags.label_tag }} {{ form.tags }}
-                        </p>
-                        <hr class="form-divider">
-                        <p>
-                            {{ form.show_authors }} {{ form.show_authors.label_tag }}
-                        </p>
-                        <p>
-                            Authors (by UUID):
-                        </p>
-                        <div class="artifact-authors">
-                            {{ form.author_1 }}
-                            {{ form.author_2 }}
-                            {{ form.author_3 }}
-                            {{ form.author_4 }}
-                            {{ form.author_5 }}
-                            {{ form.author_6 }}
-                            {{ form.author_7 }}
-                            {{ form.author_8 }}
-                            {{ form.author_9 }}
-                            {{ form.author_10 }}
-                            {{ form.author_11 }}
-                            {{ form.author_12 }}
-                        </div>
-                        <hr class="form-divider">
-                        <div class="row align-items-center">
-                            <div class="col-lg-5">
-                                <h4>Search for FABRIC authors</h4>
-                            </div>
-                            <div class="col-lg-5">
-                                {% if search %}
-                                    <input id="search" type="text" name="search" class="search-bar w-100" value="{{ search }}">
-                                {% else %}
-                                    <input id="search" type="text" name="search" class="search-bar w-100"
-                                           placeholder="Search by name or email...">
-                                {% endif %}
-                            </div>
-                            <div class="col-lg-2">
-                                <button class="btn btn-primary btn-fabric" id="search_submit"
-                                        type="submit" style="float: right"
-                                        title="Search FABRIC users by name or email"
-                                        data-bs-toggle="tooltip" data-bs-placement="bottom">
-                                    <i class="fa fa-magnifying-glass me-1"></i> Search
-                                </button>
+                <div class="detail-row">
+                    <label class="detail-label" for="artifact-description">Description</label>
+                    <div class="detail-value">
+                        <textarea id="artifact-description" class="form-control" name="description"
+                                  rows="5" required></textarea>
+                    </div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">
+                        <label for="artifact-keywords-0">Keywords</label>
+                        <div class="text-muted">Optional</div>
+                    </div>
+                    <div class="detail-value">
+                        <div class="artifact-value-list" data-list="keywords">
+                            <div class="input-group mb-2" data-list-row>
+                                <input id="artifact-keywords-0" class="form-control" type="text"
+                                       name="keywords" aria-label="Keyword">
+                                <button class="btn btn-outline-secondary" type="button" data-remove-value
+                                        aria-label="Remove keyword">Remove</button>
                             </div>
                         </div>
-                    </form>
-                    {% if fabric_users %}
-                        <table class="soft-table mt-3">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>UUID</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for user in fabric_users %}
-                                    <tr>
-                                        <td>{{ user.name }}</td>
-                                        <td>{{ user.email }}</td>
-                                        <td><strong>{{ user.uuid }}</strong></td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    {% endif %}
+                        <button class="btn btn-outline-primary btn-sm" type="button" data-add-value="keywords">
+                            Add keyword
+                        </button>
+                    </div>
                 </div>
-                <div class="action-row mt-3">
-                    <button class="btn btn-success btn-fabric" type="submit" form="form" name="save"
-                            title="Save and create the new artifact"
-                            data-bs-toggle="tooltip" data-bs-placement="top">Save</button>
-                    <a href="{% url 'artifact_list' %}" class="btn btn-secondary btn-fabric"
-                       title="Discard changes and return to artifact list"
-                       data-bs-toggle="tooltip" data-bs-placement="top">Back</a>
+                <div class="detail-row">
+                    <div class="detail-label">
+                        <label for="artifact-scientific-domains-0">Scientific domains</label>
+                        <div class="text-muted">At least one required</div>
+                    </div>
+                    <div class="detail-value">
+                        <div class="artifact-value-list" data-list="scientificDomains">
+                            <div class="input-group mb-2" data-list-row>
+                                <input id="artifact-scientific-domains-0" class="form-control" type="text"
+                                       name="scientificDomains" aria-label="Scientific domain" required>
+                                <button class="btn btn-outline-secondary" type="button" data-remove-value
+                                        aria-label="Remove scientific domain">Remove</button>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline-primary btn-sm" type="button"
+                                data-add-value="scientificDomains">Add scientific domain</button>
+                    </div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">
+                        <label for="artifact-scientific-subdomains-0">Scientific subdomains</label>
+                        <div class="text-muted">At least one required</div>
+                    </div>
+                    <div class="detail-value">
+                        <div class="artifact-value-list" data-list="scientificSubdomains">
+                            <div class="input-group mb-2" data-list-row>
+                                <input id="artifact-scientific-subdomains-0" class="form-control" type="text"
+                                       name="scientificSubdomains" aria-label="Scientific subdomain" required>
+                                <button class="btn btn-outline-secondary" type="button" data-remove-value
+                                        aria-label="Remove scientific subdomain">Remove</button>
+                            </div>
+                        </div>
+                        <button class="btn btn-outline-primary btn-sm" type="button"
+                                data-add-value="scientificSubdomains">Add scientific subdomain</button>
+                    </div>
+                </div>
+                <div class="detail-row">
+                    <label class="detail-label" for="artifact-file">File</label>
+                    <div class="detail-value">
+                        <input id="artifact-file" class="form-control" type="file" name="file">
+                        <div class="text-muted">Optional</div>
+                    </div>
                 </div>
             </div>
+        </form>
+
+        <div class="action-row mt-3">
+            <button class="btn btn-success btn-fabric" type="submit" form="form" name="save"
+                    title="Create this artifact"
+                    data-bs-toggle="tooltip" data-bs-placement="top">Create</button>
+            <a href="/artifacts/" class="btn btn-secondary btn-fabric"
+               title="Discard changes and return to artifact list"
+               data-bs-toggle="tooltip" data-bs-placement="top">Cancel</a>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const labelNames = {
+                keywords: 'Keyword',
+                scientificDomains: 'Scientific domain',
+                scientificSubdomains: 'Scientific subdomain'
+            };
+            const idNames = {
+                keywords: 'artifact-keywords',
+                scientificDomains: 'artifact-scientific-domains',
+                scientificSubdomains: 'artifact-scientific-subdomains'
+            };
+
+            function updateRows(list) {
+                const rows = Array.from(list.querySelectorAll('[data-list-row]'));
+                rows.forEach(function (row, index) {
+                    const input = row.querySelector('input');
+                    input.id = idNames[list.dataset.list] + '-' + index;
+                    input.setAttribute('aria-label', labelNames[list.dataset.list]);
+                    input.required = list.dataset.list !== 'keywords' && index === 0;
+                    row.querySelector('[data-remove-value]').disabled =
+                        list.dataset.list !== 'keywords' && rows.length === 1;
+                });
+            }
+
+            document.querySelectorAll('[data-add-value]').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    const list = document.querySelector('[data-list="' + button.dataset.addValue + '"]');
+                    const row = list.querySelector('[data-list-row]').cloneNode(true);
+                    row.querySelector('input').value = '';
+                    list.appendChild(row);
+                    updateRows(list);
+                    row.querySelector('input').focus();
+                });
+            });
+
+            document.querySelectorAll('[data-list]').forEach(function (list) {
+                updateRows(list);
+                list.addEventListener('click', function (event) {
+                    const removeButton = event.target.closest('[data-remove-value]');
+                    if (!removeButton || removeButton.disabled) {
+                        return;
+                    }
+                    removeButton.closest('[data-list-row]').remove();
+                    updateRows(list);
+                });
+            });
+
+            document.getElementById('form').addEventListener('submit', function () {
+                document.querySelectorAll('[data-list] input').forEach(function (input) {
+                    if (!input.value.trim()) {
+                        input.disabled = true;
+                    }
+                });
+            });
+        })();
+    </script>
         {% else %}
             <div class="alert alert-warning" role="alert">
                 You are not able to create an Artifact.
@@ -126,20 +183,5 @@
         <a href="/login" class="btn btn-success btn-fabric"
            title="Sign in with CILogon to create artifacts"
            data-bs-toggle="tooltip" data-bs-placement="right">Login</a>
-    {% endif %}
-    {% if debug %}
-        <hr>
-        <div class="debug-block">
-            <pre><strong>form</strong>:
-{{ form.data|json_pretty }}</pre>
-        </div>
-        <div class="debug-block mt-2">
-            <pre><strong>fabric_users</strong>:
-{{ fabric_users|json_pretty }}</pre>
-        </div>
-        <div class="debug-block mt-2">
-            <pre><strong>api_user</strong>:
-{{ api_user|json_pretty }}</pre>
-        </div>
     {% endif %}
 {% endblock %}

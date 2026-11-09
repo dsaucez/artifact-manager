@@ -13,7 +13,8 @@ from pydantic import BaseModel
 
 
 class ApiUser(BaseModel):
-    is_authenticated: bool = False
+    is_authenticated: bool = True
+    can_create_artifact: bool = True
 
 
 def json_pretty(value) -> str:
@@ -149,11 +150,29 @@ async def get_artifact(internal_id: int, debug: bool = False):
         "now": datetime.datetime.now(),
         # "message": "This is a test detail",
         "api_user": api_user,
-        "artifact": data,
         "show_authors": True,
         "debug": debug,
         "visibility": "public",  # public, author, project,
         "artifact": data,
+    }
+
+    html_content = template.render(infos)
+
+    return html_content
+
+
+@app.get("/artifacts/create/", response_class=HTMLResponse)
+async def create_artifact(internal_id: int, debug: bool = False):
+    template = env.get_template("artifacts/artifact_create.html")
+
+    infos = {
+        "app_version": app.version,
+        "now": datetime.datetime.now(),
+        "message": "This is a test detail",
+        "api_user": api_user,
+        "show_authors": True,
+        "debug": debug,
+        "visibility": "public",  # public, author, project,
     }
 
     html_content = template.render(infos)
