@@ -100,11 +100,11 @@
                 <div class="detail-label">Creation Date</div>
                 <div class="detail-value">{{ artifact.createdAt | normalize_date_to_utc }}</div>
             </div>
-            {% if artifact.keywords + artifact.scientificDomains + artifact.scientificSubdomains %}
+            {% if artifact.keywords %}
                 <div class="detail-row">
                     <div class="detail-label">Tags</div>
                     <div class="detail-value">
-                        {% for tag in artifact.keywords + artifact.scientificDomains + artifact.scientificSubdomains %}
+                        {% for tag in artifact.keywords %}
                             <span class="pub-badge">
                                 <a href="/artifacts/?search={{ tag }}">{{ tag }}</a>
                             </span>

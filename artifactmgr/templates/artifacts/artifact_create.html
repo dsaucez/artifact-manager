@@ -23,7 +23,7 @@
         </div>
 
         <form id="form" method="POST" enctype="multipart/form-data">
-            <!-- {% csrf_token %} -->
+            <!-- { % csrf_token %} -->
             <div class="detail-card">
                 <div class="detail-row">
                     <label class="detail-label" for="artifact-name">Name</label>
@@ -67,7 +67,7 @@
                         <div class="artifact-value-list" data-list="scientificDomains">
                             <div class="input-group mb-2" data-list-row>
                                 <input id="artifact-scientific-domains-0" class="form-control" type="text"
-                                       name="scientificDomains" aria-label="Scientific domain" required>
+                                       name="scientificDomains" aria-label="Scientific domain">
                                 <button class="btn btn-outline-secondary" type="button" data-remove-value
                                         aria-label="Remove scientific domain">Remove</button>
                             </div>
@@ -85,7 +85,7 @@
                         <div class="artifact-value-list" data-list="scientificSubdomains">
                             <div class="input-group mb-2" data-list-row>
                                 <input id="artifact-scientific-subdomains-0" class="form-control" type="text"
-                                       name="scientificSubdomains" aria-label="Scientific subdomain" required>
+                                       name="scientificSubdomains" aria-label="Scientific subdomain">
                                 <button class="btn btn-outline-secondary" type="button" data-remove-value
                                         aria-label="Remove scientific subdomain">Remove</button>
                             </div>
@@ -133,7 +133,6 @@
                     const input = row.querySelector('input');
                     input.id = idNames[list.dataset.list] + '-' + index;
                     input.setAttribute('aria-label', labelNames[list.dataset.list]);
-                    input.required = list.dataset.list !== 'keywords' && index === 0;
                     row.querySelector('[data-remove-value]').disabled =
                         list.dataset.list !== 'keywords' && rows.length === 1;
                 });
@@ -162,9 +161,22 @@
                 });
             });
 
-            document.getElementById('form').addEventListener('submit', function () {
+            document.getElementById('form').addEventListener('submit', function (event) {
+                for (const listName of ['scientificDomains', 'scientificSubdomains']) {
+                    const list = document.querySelector('[data-list="' + listName + '"]');
+                    const inputs = Array.from(list.querySelectorAll('input'));
+                    const firstInput = inputs[0];
+                    if (!inputs.some(function (input) { return input.value.trim(); })) {
+                        event.preventDefault();
+                        firstInput.setCustomValidity('Enter at least one value.');
+                        firstInput.reportValidity();
+                        firstInput.setCustomValidity('');
+                        return;
+                    }
+                }
                 document.querySelectorAll('[data-list] input').forEach(function (input) {
-                    if (!input.value.trim()) {
+                    input.value = input.value.trim();
+                    if (!input.value) {
                         input.disabled = true;
                     }
                 });

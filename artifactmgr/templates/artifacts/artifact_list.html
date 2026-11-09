@@ -32,7 +32,7 @@
                         <i class="fa fa-magnifying-glass me-1"></i> Search
                     </button>
                     {% if api_user.is_authenticated %}
-                        <a href="{ % url 'artifact_create' %}" class="btn btn-success btn-fabric text-nowrap"
+                        <a href="/artifacts/create/" class="btn btn-success btn-fabric text-nowrap"
                            title="Create a new shareable artifact"
                            data-bs-toggle="tooltip" data-bs-placement="bottom">
                             <i class="fa fa-plus me-1"></i> Create Artifact
@@ -72,9 +72,9 @@
                             {{ artifact.createdAt | normalize_date_to_utc }}
                         </span>
                     </div>
-                    {% if artifact.keywords + artifact.scientificDomains + artifact.scientificSubdomains %}
+                    {% if artifact.keywords %}
                         <div>
-                            {% for tag in artifact.keywords + artifact.scientificDomains + artifact.scientificSubdomains %}
+                            {% for tag in artifact.keywords %}
                                 <span class="pub-badge">
                                     <a href="?search={{ tag }}">{{ tag }}</a>
                                 </span>

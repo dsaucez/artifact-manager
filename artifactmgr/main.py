@@ -1,20 +1,34 @@
 import datetime
 import json
 from logging import Logger
-from typing import Union
+from typing import Annotated, Union
+from uuid import uuid4
 
 import httpx
 import humanize
-from fastapi import FastAPI
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 from jinja2 import Environment, FileSystemLoader
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr, Field, constr
 
 
 class ApiUser(BaseModel):
-    is_authenticated: bool = True
+    is_authenticated: bool = False
     can_create_artifact: bool = True
+    firstName: str
+    lastName: str
+    email: EmailStr
+    orcId: str | None = None
+    organization: str | None = None
+
+
+class ArtifactCreateRequest(BaseModel):
+    name: constr(strip_whitespace=True, min_length=1)
+    description: constr(strip_whitespace=True, min_length=1)
+    keywords: list[str] = Field(default_factory=list)
+    scientificDomains: list[str] = Field(default_factory=list)
+    scientificSubdomains: list[str] = Field(default_factory=list)
 
 
 def json_pretty(value) -> str:
@@ -68,7 +82,13 @@ env.filters["json_pretty"] = json_pretty
 
 
 # Dummy
-api_user = ApiUser()
+api_user = ApiUser(
+    firstName="Damien",
+    lastName="SAUCEZ",
+    email="Damien.Saucez@inria.fr",
+    orcId=None,
+    organization="Inria",
+)
 
 
 ## == Artifact list ============================================================
@@ -168,7 +188,7 @@ async def create_artifact(debug: bool = False):
     infos = {
         "app_version": app.version,
         "now": datetime.datetime.now(),
-        "message": "This is a test detail",
+        # "message": "This is a test create",
         "api_user": api_user,
         "show_authors": True,
         "debug": debug,
@@ -178,3 +198,69 @@ async def create_artifact(debug: bool = False):
     html_content = template.render(infos)
 
     return html_content
+
+
+@app.post("/artifacts/create/")
+async def submit_artifact(
+    name: Annotated[str, Form()],
+    description: Annotated[str, Form()],
+    keywords: Annotated[list[str], Form()] = [],
+    scientificDomains: Annotated[list[str], Form()] = [],
+    scientificSubdomains: Annotated[list[str], Form()] = [],
+    file: UploadFile | None = File(default=None),
+):
+    form_data = ArtifactCreateRequest(
+        name=name,
+        description=description,
+        keywords=keywords,
+        scientificDomains=scientificDomains,
+        scientificSubdomains=scientificSubdomains,
+    )
+    artifact: dict[str, object] = {
+        "name": form_data.name,
+        "description": form_data.description,
+    }
+
+    for field in ("keywords", "scientificDomains", "scientificSubdomains"):
+        artifact[field] = [
+            value.strip() for value in getattr(form_data, field) if value.strip()
+        ]
+
+    artifact["file"] = (
+        {
+            "filename": file.filename,
+            "content_type": file.content_type,
+            "size": file.size,
+        }
+        if isinstance(file, UploadFile) and file.filename
+        else None
+    )
+
+    print(file)
+    body = json.loads("""
+    {"$type": "Dataset", "identifier": "test-url-edit", "systemCreationDate": null, "internalIdentifier": null, "alternateIdentifier": null, "downloadUrl": null, "creators": [{"email": "Damien.Saucez@inria.fr", "firstName": "Damien", "lastName": "SAUCEZ", "orcId": null, "organization": "INRIA;INRIA", "phone": null, "position": null, "website": null}], "name": "", "description": "", "resourceType": "Dataset", "subjects": [], "keywords": [], "createdAt": "2026-11-09T12:49:15.719774Z", "version": "1.0", "metadataProfile": null, "contributors": [], "accessType": "Remote", "accessMode": "Free", "requiredObjects": [], "relatedObjects": [], "primaryLanguages": [], "otherLanguages": [], "contact": null, "publicContact": null, "rights": "", "rightsUri": null, "accessRights": "", "license": "BSD-3-Clause", "licenseUri": null, "copyrightsHolder": "Damien SAUCEZ", "confidentialityDeclaration": null, "specialPermissions": null, "restrictions": null, "citationRequirements": null, "conditions": null, "disclaimer": null, "provenance": null, "createdBy": null, "numberOfVisits": 0, "numberOfDownloads": 0, "paymentModel": null, "pricing": null, "scientificDomains": ["networks"], "scientificSubdomains": ["network protocols"], "address": null, "dateTimeStart": "2026-11-09T12:49:15.719774Z", "dateTimeEnd": "2026-11-09T12:49:15.719774Z", "locations": [], "byteSize": 0, "duration": null, "format": "", "medium": "", "compressionFormat": null, "fileMetadata": "", "dataStandard": null, "encodingFormat": null, "statistics": null}
+    """)
+
+    body["creators"] = [
+        {
+            "email": api_user.email,
+            "firstName": api_user.firstName,
+            "lastName": api_user.lastName,
+            "orcId": api_user.orcId,
+            "organization": api_user.organization,
+        }
+    ]
+    body["identifier"] = uuid4()
+    body["name"] = artifact["name"]
+    body["description"] = artifact["description"]
+    body["keywords"] = artifact["keywords"]
+    body["scientificDomains"] = artifact["scientificDomains"]
+    body["scientificSubdomains"] = artifact["scientificSubdomains"]
+
+    body["keywords"].append("post5g-blueprint-artifact")
+
+    if file:
+        body["byteSize"] = file.size
+        body["format"] = file.content_type
+
+    return body
