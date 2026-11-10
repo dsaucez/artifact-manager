@@ -1,0 +1,9 @@
+api_version: v0.2.1
+
+base_url: https://mrs-backend.slices-staging.slices-be.eu/v0.2/digital-objects
+
+selection_keywords: post5g-blueprint-artifact
+
+allowed_issuers:
+- https://sts.slices-staging.slices-be.eu/realms/dmi
+

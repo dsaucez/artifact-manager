@@ -1,5 +1,5 @@
 <nav class="navbar navbar-expand-lg navbar-fabric px-2" data-bs-theme="dark">
-    <a class="navbar-brand navbar" href="/artifacts/">
+    <a class="navbar-brand navbar" href="/artifacts/{{ extra_url }}">
         <img
                 src="/static/images/logo/slicesri-color.png"
                 alt="fabric logo"
@@ -21,7 +21,7 @@
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav me-auto order-0">
             <li class="nav-item">
-                <a class="nav-link" href="/artifacts/">Artifacts</a>
+                <a class="nav-link" href="/artifacts/{{extra_url}}">Artifacts</a>
             </li>
             <!-- <li class="nav-item">
                 <a class="nav-link" href="{ % url 'author_list' %}">Authors</a>
@@ -29,17 +29,17 @@
             <!-- <li class="nav-item">
                 <a class="nav-link" href="{ % url 'project_list' %}">Projects</a>
             </li> -->
-            {% if api_user.is_authenticated %}
-                <li class="nav-item">
-                    <a
-                            class="nav-link"
-                            href="/api/swagger/"
-                            target="_blank"
-                    >
-                        API
-                    </a>
-                </li>
-            {% endif %}
+
+            <li class="nav-item">
+                <a
+                        class="nav-link"
+                        href="https://mrs-backend.slices-staging.slices-be.eu/swagger/index.html"
+                        target="_blank"
+                >
+                    API
+                </a>
+            </li>
+
         </ul>
         <div class="navbar-nav nav-item ms-auto order-4">
             <div class="dropdown">

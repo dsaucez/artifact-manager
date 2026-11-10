@@ -46,31 +46,24 @@
                 {% endif %}
             </div>
             <div class="action-row">
-                <a href="/artifacts/" class="btn btn-secondary btn-fabric"
+                <a href="/artifacts/{{ extra_url}}" class="btn btn-secondary btn-fabric"
                    title="Return to artifact list"
                    data-bs-toggle="tooltip" data-bs-placement="bottom">Back</a>
                 {% if is_author %}
-                    <a href="{ % url 'artifact_update' uuid=artifact.uuid %}" class="btn btn-success btn-fabric"
+                    <a href="https://mrs-portal.slices-staging.slices-be.eu/app/management/digital-objects/view/{{ artifact.internalIdentifier }}" target="_blank" class="btn btn-success btn-fabric"
                        title="Edit artifact details, authors, and tags"
                        data-bs-toggle="tooltip" data-bs-placement="bottom">Edit</a>
-                    <form action="{ % url 'artifact_detail' uuid=artifact.uuid %}" method="POST" style="display: inline;">
-                        <!-- { % csrf_token %} -->
-                        <input type="hidden" name="artifact_uuid" value="{{ artifact.uuid }}">
-                        <button class="btn btn-danger btn-fabric" type="submit"
-                                name="artifact_detail_button" value="delete_artifact"
-                                onclick="return confirm('Delete Artifact: {{ artifact.title }}?')"
-                                title="Permanently delete this artifact and all versions"
-                                data-bs-toggle="tooltip" data-bs-placement="bottom">
-                            Delete
-                        </button>
-                    </form>
+                    <a href="https://mrs-portal.slices-staging.slices-be.eu/app/management/digital-objects/view/{{ artifact.internalIdentifier }}" target="_blank" class="btn btn-danger btn-fabric"
+                       title="Delete artifact"
+                       onclick="return confirm('Delete Artifact: {{ artifact.name }}?')"
+                       data-bs-toggle="tooltip" data-bs-placement="bottom">Delete</a>
                 {% endif %}
             </div>
         </div>
 
         <div class="detail-card">
             <div style="padding: 1.25rem 1.5rem;">
-                {{ artifact.description | safe }}
+                {{ artifact.description | markdown | safe }}
             </div>
         </div>
 
@@ -158,7 +151,7 @@
             {% endif %}
         {% endif %}
 
-        {% if is_author %}
+        {% if is_author_FAKE %}
             <div class="form-card mt-3">
                 <h4>Add a new Version</h4>
                 <form method="post" enctype="multipart/form-data">
