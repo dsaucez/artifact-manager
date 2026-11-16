@@ -180,7 +180,10 @@ async def root(
 async def login(
     api_user: ApiUser = Depends(get_bearer_token),
 ):
-    return HTMLResponse(content="<html><body>Login successful</body></html>")
+
+    return HTMLResponse(
+        content=f"<html><body>Login successful: {api_user.firstName} {api_user.lastName} : {api_user.email}</body></html>"
+    )
 
 
 @app.get("/artifacts/", response_class=HTMLResponse)
