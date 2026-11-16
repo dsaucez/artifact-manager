@@ -6,7 +6,7 @@ from settings import settings
 
 
 async def decode_optional_token(token: str | None) -> ApiUser:
-    if token is None:
+    if token is None or not token.strip():
         return ApiUser(
             firstName="Anonymous",
             lastName="Anonymous",

@@ -38,7 +38,9 @@ bearer_scheme = HTTPBearer()
 async def get_api_user(
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> ApiUser:
+    print("Getting API user from token {}".format(credentials.credentials))
     api_user = await decode_optional_token(credentials.credentials)
+    print("Decoded API user: {}".format(api_user))
     return api_user
 
 
