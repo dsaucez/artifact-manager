@@ -6,6 +6,8 @@ from settings import settings
 
 
 async def decode_optional_token(token: str | None) -> ApiUser:
+
+    print(f"OTKEN+{token}")
     if token is None or not token.strip():
         return ApiUser(
             firstName="Anonymous",
@@ -17,13 +19,13 @@ async def decode_optional_token(token: str | None) -> ApiUser:
         )
 
     if not token.strip():
-        raise HTTPException(status_code=401, detail="Invalid token")
+        raise HTTPException(status_code=401, detail="Invalid token1")
 
     try:
         unverified_claims = jwt.decode(token, options={"verify_signature": False})
         issuer = unverified_claims.get("iss")
     except (jwt.PyJWTError, TypeError, ValueError) as exc:
-        raise HTTPException(status_code=401, detail="Invalid token") from exc
+        raise HTTPException(status_code=401, detail="Invalid token2") from exc
 
     if issuer not in settings.allowed_issuers:
         raise HTTPException(
@@ -76,7 +78,7 @@ async def decode_optional_token(token: str | None) -> ApiUser:
         if len(matching_keys) != 1:
             raise jwt.InvalidTokenError("No matching signing key")
     except (jwt.PyJWTError, TypeError, ValueError) as exc:
-        raise HTTPException(status_code=401, detail="Invalid token") from exc
+        raise HTTPException(status_code=401, detail="Invalid token 3") from exc
 
     try:
         signing_key = jwt.PyJWK(matching_keys[0]).key
