@@ -57,6 +57,27 @@
                        title="Delete artifact"
                        onclick="return confirm('Delete Artifact: {{ artifact.name }}?')"
                        data-bs-toggle="tooltip" data-bs-placement="bottom">Delete</a>
+                       <button type="button"
+                            class="btn btn-danger btn-fabric"
+                            title="Delete artifact"
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="bottom"
+                            onclick="if (confirm('Delete Artifact: {{ artifact.name }}?')) {
+                                fetch('https://mrs-backend.slices-staging.slices-be.eu/v0.2/digital-objects/{{ artifact.internalIdentifier }}', {
+                                    method: 'DELETE',
+                                    headers: {
+                                        'Authorization': 'Bearer {{ api_user.token }}'
+                                    }
+                                }).then(response => {
+                                    if (response.ok) {
+                                        window.location.reload();
+                                    } else {
+                                        alert('Failed to delete artifact: ' + response.status);
+                                    }
+                                }).catch(error => alert('Error: ' + error));
+                            }">
+                        Delete
+                      </button>
                 {% endif %}
             </div>
         </div>
