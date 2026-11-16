@@ -130,6 +130,7 @@ async def upload_digital_object(
         "accept": "application/json",
         "Authorization": f"Bearer {token}",
     }
+    print(headers)
 
     """Upload a file with JSON metadata to the digital-objects API."""
     if file is None:
