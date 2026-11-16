@@ -176,6 +176,13 @@ async def root(
     return RedirectResponse(url="/artifacts", status_code=307)
 
 
+@app.get("/login")
+async def login(
+    api_user: ApiUser = Depends(get_bearer_token),
+):
+    return HTMLResponse(content="<html><body>Login successful</body></html>")
+
+
 @app.get("/artifacts/", response_class=HTMLResponse)
 async def list_artifacts(
     search: str | None = None,
