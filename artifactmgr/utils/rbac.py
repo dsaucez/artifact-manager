@@ -5,9 +5,16 @@ from models import ApiUser
 from settings import settings
 
 
-async def decode_optional_token(token: str | None) -> ApiUser | None:
+async def decode_optional_token(token: str | None) -> ApiUser:
     if token is None:
-        return None
+        return ApiUser(
+            firstName="Anonymous",
+            lastName="Anonymous",
+            email="Anonymous@example.org",
+            is_authenticated=False,
+            can_create_artifact=False,
+            token=None,
+        )
 
     if not token.strip():
         raise HTTPException(status_code=401, detail="Invalid token")
