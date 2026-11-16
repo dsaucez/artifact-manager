@@ -37,7 +37,7 @@ env.filters["json_pretty"] = json_pretty
 env.filters["markdown"] = lambda text: markdown.markdown(
     text, extensions=["fenced_code", "codehilite"]
 )
-
+env.globals["settings"] = settings
 
 app = FastAPI(version=settings.api_version)
 app.mount("/static", StaticFiles(directory="server/static"), name="static")

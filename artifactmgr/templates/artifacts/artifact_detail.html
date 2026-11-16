@@ -53,17 +53,13 @@
                     <a href="https://mrs-portal.slices-staging.slices-be.eu/app/management/digital-objects/view/{{ artifact.internalIdentifier }}" target="_blank" class="btn btn-success btn-fabric"
                        title="Edit artifact details, authors, and tags"
                        data-bs-toggle="tooltip" data-bs-placement="bottom">Edit</a>
-                    <!-- <a href="https://mrs-portal.slices-staging.slices-be.eu/app/management/digital-objects/view/{{ artifact.internalIdentifier }}" target="_blank" class="btn btn-danger btn-fabric"
-                       title="Delete artifact"
-                       onclick="return confirm('Delete Artifact: {{ artifact.name }}?')"
-                       data-bs-toggle="tooltip" data-bs-placement="bottom">Delete</a> -->
                     <button type="button"
                         class="btn btn-danger btn-fabric"
                         title="Delete artifact"
                         data-bs-toggle="tooltip"
                         data-bs-placement="bottom"
                         onclick="if (confirm('Delete Artifact: {{ artifact.name }}?')) {
-                            fetch('https://mrs-backend.slices-staging.slices-be.eu/v0.2/digital-objects/{{ artifact.internalIdentifier }}', {
+                            fetch('{{ settings.base_url }}/{{ artifact.internalIdentifier }}', {
                                 method: 'DELETE',
                                 headers: {
                                     'Authorization': 'Bearer {{ api_user.token }}'
