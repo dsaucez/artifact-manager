@@ -1,15 +1,20 @@
 import datetime
 import json
 import os
+import re
 from typing import Annotated
 from uuid import uuid4
 
+import bleach
 import httpx
 import markdown
-from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
+import mermaidx
+from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi.staticfiles import StaticFiles
 from jinja2 import Environment, FileSystemLoader
+from markupsafe import Markup
 from models import ArtifactCreateRequest
 from settings import settings
 from utils.helpers import humanize_bytes, json_pretty, normalize_date_to_utc, now
@@ -27,13 +32,7 @@ env.filters["markdown"] = lambda text: markdown.markdown(
 app = FastAPI(version=settings.api_version)
 app.mount("/static", StaticFiles(directory="server/static"), name="static")
 
-
-import re
-
-import bleach
-import markdown
-import mermaidx
-from markupsafe import Markup
+security = HTTPBearer()
 
 MERMAID_PATTERN = re.compile(
     r"```mermaid\s*\n(.*?)```",
@@ -216,6 +215,10 @@ async def get_artifact(
     debug: bool = False,
     token: str | None = None,
 ):
+
+    token = request.headers.get("oidc_access_token")
+    print(f"Token from headers: {token}")
+
     api_user = await decode_optional_token(token)
     template = env.get_template("artifacts/artifact_detail.html")
 
