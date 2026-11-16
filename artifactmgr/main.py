@@ -204,6 +204,7 @@ async def logout(
 
 @app.get("/artifacts/", response_class=HTMLResponse)
 async def list_artifacts(
+    request: Request,
     search: str | None = None,
     page_index: int = 0,
     debug: bool = False,
@@ -237,7 +238,7 @@ async def list_artifacts(
         "prev_page": prev_page,
         "next_page": next_page,
         "search": search,
-        # "extra_url": extra_url,
+        "extra_url": f"?state={request.url}",
     }
 
     html_content = template.render(infos)
@@ -279,6 +280,7 @@ async def get_artifact(
         "debug": debug,
         "visibility": "public",  # public, author, project,
         "artifact": data,
+        "extra_url": f"?state={request.url}",
     }
 
     if api_user and api_user.email.lower() == data.get("createdBy", "").lower():
@@ -292,7 +294,6 @@ async def get_artifact(
 
 @app.get("/artifacts/create/", response_class=HTMLResponse)
 async def create_artifact(
-    request: Request,
     debug: bool = False,
     api_user: ApiUser = Depends(get_api_user),
 ):
@@ -306,7 +307,6 @@ async def create_artifact(
         "show_authors": True,
         "debug": debug,
         "visibility": "public",  # public, author, project,
-        "extra_url": f"?state={request.url}",
     }
 
     html_content = template.render(infos)
