@@ -95,6 +95,7 @@ async def decode_optional_token(token: str | None) -> ApiUser | None:
             email=decoded_token.get("email"),
             is_authenticated=True,
             can_create_artifact=True,
+            token=token,
         )
     except jwt.PyJWTError as exc:
         raise HTTPException(status_code=401, detail=f"Invalid token: {exc}") from exc
