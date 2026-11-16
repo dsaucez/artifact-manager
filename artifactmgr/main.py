@@ -35,7 +35,7 @@ app.mount("/static", StaticFiles(directory="server/static"), name="static")
 bearer_scheme = HTTPBearer()
 
 
-async def get_bearer_token(
+async def get_api_user(
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> ApiUser:
     api_user = await decode_optional_token(credentials.credentials)
@@ -171,7 +171,7 @@ async def upload_digital_object(
 # == Endpoints =================================================================
 @app.get("/")
 async def root(
-    api_user: ApiUser = Depends(get_bearer_token),
+    api_user: ApiUser = Depends(get_api_user),
 ):
     return RedirectResponse(url="/artifacts", status_code=307)
 
@@ -179,7 +179,7 @@ async def root(
 @app.get("/oidc/login")
 async def login(
     state: str | None = None,
-    api_user: ApiUser = Depends(get_bearer_token),
+    api_user: ApiUser = Depends(get_api_user),
 ):
     if state:
         print(f"state={state}")
@@ -190,7 +190,7 @@ async def login(
 
 @app.get("/oidc/logout")
 async def logout(
-    api_user: ApiUser = Depends(get_bearer_token),
+    api_user: ApiUser = Depends(get_api_user),
 ):
     return RedirectResponse(url="/", status_code=307)
 
@@ -200,7 +200,7 @@ async def list_artifacts(
     search: str | None = None,
     page_index: int = 0,
     debug: bool = False,
-    api_user: ApiUser = Depends(get_bearer_token),
+    api_user: ApiUser = Depends(get_api_user),
 ):
     # api_user = await decode_optional_token(token)
 
@@ -242,7 +242,7 @@ async def get_artifact(
     request: Request,
     internal_id: int,
     debug: bool = False,
-    api_user: ApiUser = Depends(get_bearer_token),
+    api_user: ApiUser = Depends(get_api_user),
 ):
 
     # print(f"Token from dependency========================================: {xxx=}")
@@ -286,7 +286,7 @@ async def get_artifact(
 @app.get("/artifacts/create/", response_class=HTMLResponse)
 async def create_artifact(
     debug: bool = False,
-    api_user: ApiUser = Depends(get_bearer_token),
+    api_user: ApiUser = Depends(get_api_user),
 ):
     template = env.get_template("artifacts/artifact_create.html")
 
@@ -314,7 +314,7 @@ async def submit_artifact(
     scientificSubdomains: Annotated[list[str], Form()] = [],
     file: UploadFile | None = File(default=None),
     debug: bool = False,
-    api_user: ApiUser = Depends(get_bearer_token),
+    api_user: ApiUser = Depends(get_api_user),
 ):
     if file is not None and not file.filename:
         file = None
