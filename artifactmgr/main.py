@@ -217,7 +217,7 @@ async def get_artifact(
 ):
 
     token = request.headers.get("oidc_access_token")
-    print(f"Token from headers: {token}")
+    print(f"Token from headers========================================: {token=}")
 
     api_user = await decode_optional_token(token)
     template = env.get_template("artifacts/artifact_detail.html")
