@@ -6,8 +6,6 @@ from settings import settings
 
 
 async def decode_optional_token(token: str | None) -> ApiUser:
-
-    print(f"OTKEN+{token}")
     if token is None or not token.strip() or token == "(null)":
         return ApiUser(
             firstName="Anonymous",

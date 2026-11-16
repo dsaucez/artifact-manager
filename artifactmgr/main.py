@@ -3,13 +3,23 @@ import json
 import os
 import re
 from typing import Annotated
+from urllib.parse import unquote
 from uuid import uuid4
 
 import bleach
 import httpx
 import markdown
 import mermaidx
-from fastapi import Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi import (
+    Depends,
+    FastAPI,
+    File,
+    Form,
+    HTTPException,
+    Query,
+    Request,
+    UploadFile,
+)
 from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi.staticfiles import StaticFiles
@@ -38,9 +48,7 @@ bearer_scheme = HTTPBearer()
 async def get_api_user(
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> ApiUser:
-    print("Getting API user from token {}".format(credentials.credentials))
     api_user = await decode_optional_token(credentials.credentials)
-    print("Decoded API user: {}".format(api_user))
     return api_user
 
 
@@ -180,14 +188,11 @@ async def root(
 
 @app.get("/oidc/login")
 async def login(
-    state: str | None = None,
+    state: str = Query(...),
     api_user: ApiUser = Depends(get_api_user),
 ):
-    if state:
-        print(f"state={state}")
-    return HTMLResponse(
-        content=f"<html><body>Login successful: {api_user.firstName} {api_user.lastName} : {api_user.email}</body></html>"
-    )
+    decoded_url = unquote(state)
+    return RedirectResponse(url=decoded_url, status_code=307)
 
 
 @app.get("/oidc/logout")
@@ -287,6 +292,7 @@ async def get_artifact(
 
 @app.get("/artifacts/create/", response_class=HTMLResponse)
 async def create_artifact(
+    request: Request,
     debug: bool = False,
     api_user: ApiUser = Depends(get_api_user),
 ):
@@ -300,6 +306,7 @@ async def create_artifact(
         "show_authors": True,
         "debug": debug,
         "visibility": "public",  # public, author, project,
+        "extra_url": f"?state={request.url}",
     }
 
     html_content = template.render(infos)
