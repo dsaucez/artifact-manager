@@ -140,7 +140,6 @@ async def upload_digital_object(
         "accept": "application/json",
         "Authorization": f"Bearer {token}",
     }
-    print(headers)
 
     """Upload a file with JSON metadata to the digital-objects API."""
     if file is None:
@@ -252,16 +251,7 @@ async def get_artifact(
     debug: bool = False,
     api_user: ApiUser = Depends(get_api_user),
 ):
-
-    # print(f"Token from dependency========================================: {xxx=}")
-    # token = request.headers.get("oidc_access_token")
-    # print(f"Token from headers========================================: {token=}")
-
-    # api_user = await decode_optional_token(token)
     template = env.get_template("artifacts/artifact_detail.html")
-
-    for name, value in request.headers.items():
-        print(f"{name}: {value}")
 
     try:
         data = await get_digital_object(internal_id=internal_id)
