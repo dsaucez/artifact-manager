@@ -186,6 +186,14 @@ async def login(
     )
 
 
+@app.get("/logout")
+async def logout(
+    api_user: ApiUser = Depends(get_bearer_token),
+):
+
+    return HTMLResponse(content=f"<html><body>Logout successful</body></html>")
+
+
 @app.get("/artifacts/", response_class=HTMLResponse)
 async def list_artifacts(
     search: str | None = None,
