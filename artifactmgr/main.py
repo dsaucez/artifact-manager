@@ -176,7 +176,7 @@ async def root(
     return RedirectResponse(url="/artifacts", status_code=307)
 
 
-@app.get("/login")
+@app.get("/oidc/login")
 async def login(
     api_user: ApiUser = Depends(get_bearer_token),
 ):
@@ -186,7 +186,7 @@ async def login(
     )
 
 
-@app.get("/logout")
+@app.get("/oidc/logout")
 async def logout(
     api_user: ApiUser = Depends(get_bearer_token),
 ):
