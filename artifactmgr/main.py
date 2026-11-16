@@ -178,9 +178,11 @@ async def root(
 
 @app.get("/oidc/login")
 async def login(
+    state: str | None = None,
     api_user: ApiUser = Depends(get_bearer_token),
 ):
-
+    if state:
+        print(f"state={state}")
     return HTMLResponse(
         content=f"<html><body>Login successful: {api_user.firstName} {api_user.lastName} : {api_user.email}</body></html>"
     )
