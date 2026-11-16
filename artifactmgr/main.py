@@ -32,7 +32,14 @@ env.filters["markdown"] = lambda text: markdown.markdown(
 app = FastAPI(version=settings.api_version)
 app.mount("/static", StaticFiles(directory="server/static"), name="static")
 
-security = HTTPBearer()
+bearer_scheme = HTTPBearer()
+
+
+def get_bearer_token(
+    credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+) -> str:
+    return credentials.credentials
+
 
 MERMAID_PATTERN = re.compile(
     r"```mermaid\s*\n(.*?)```",
@@ -214,8 +221,10 @@ async def get_artifact(
     internal_id: int,
     debug: bool = False,
     token: str | None = None,
+    xxx: str = Depends(get_bearer_token),
 ):
 
+    print(f"Token from dependency========================================: {xxx=}")
     token = request.headers.get("oidc_access_token")
     print(f"Token from headers========================================: {token=}")
 
