@@ -221,15 +221,15 @@ async def get_artifact(
     request: Request,
     internal_id: int,
     debug: bool = False,
-    token: str | None = None,
-    xxx: ApiUser = Depends(get_bearer_token),
+    # token: str | None = None,
+    api_user: ApiUser = Depends(get_bearer_token),
 ):
 
-    print(f"Token from dependency========================================: {xxx=}")
-    token = request.headers.get("oidc_access_token")
-    print(f"Token from headers========================================: {token=}")
+    # print(f"Token from dependency========================================: {xxx=}")
+    # token = request.headers.get("oidc_access_token")
+    # print(f"Token from headers========================================: {token=}")
 
-    api_user = await decode_optional_token(token)
+    # api_user = await decode_optional_token(token)
     template = env.get_template("artifacts/artifact_detail.html")
 
     for name, value in request.headers.items():
@@ -243,7 +243,7 @@ async def get_artifact(
             status_code=e.response.status_code,
         )
 
-    extra_url = f"?token={token}" if token is not None else ""
+    # extra_url = f"?token={token}" if token is not None else ""
     infos = {
         "app_version": app.version,
         "now": datetime.datetime.now(),
@@ -253,7 +253,7 @@ async def get_artifact(
         "debug": debug,
         "visibility": "public",  # public, author, project,
         "artifact": data,
-        "extra_url": extra_url,
+        # "extra_url": extra_url,
     }
 
     if api_user and api_user.email.lower() == data.get("createdBy", "").lower():
