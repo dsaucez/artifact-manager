@@ -15,7 +15,7 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from fastapi.staticfiles import StaticFiles
 from jinja2 import Environment, FileSystemLoader
 from markupsafe import Markup
-from models import ArtifactCreateRequest
+from models import ApiUser, ArtifactCreateRequest
 from settings import settings
 from utils.helpers import humanize_bytes, json_pretty, normalize_date_to_utc, now
 from utils.rbac import decode_optional_token
