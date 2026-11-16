@@ -37,8 +37,9 @@ bearer_scheme = HTTPBearer()
 
 def get_bearer_token(
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
-) -> str:
-    return credentials.credentials
+) -> ApiUser:
+    api_user = decode_optional_token(credentials.credentials)
+    return api_user
 
 
 MERMAID_PATTERN = re.compile(
@@ -221,7 +222,7 @@ async def get_artifact(
     internal_id: int,
     debug: bool = False,
     token: str | None = None,
-    xxx: str = Depends(get_bearer_token),
+    xxx: ApiUser = Depends(get_bearer_token),
 ):
 
     print(f"Token from dependency========================================: {xxx=}")
