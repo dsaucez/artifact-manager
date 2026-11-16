@@ -169,8 +169,9 @@ async def upload_digital_object(
 
 # == Endpoints =================================================================
 @app.get("/")
-async def root(token: str | None = None):
-    api_user = await decode_optional_token(token)
+async def root(
+    api_user: ApiUser = Depends(get_bearer_token),
+):
     return RedirectResponse(url="/artifacts", status_code=307)
 
 
@@ -179,9 +180,9 @@ async def list_artifacts(
     search: str | None = None,
     page_index: int = 0,
     debug: bool = False,
-    token: str | None = None,
+    api_user: ApiUser = Depends(get_bearer_token),
 ):
-    api_user = await decode_optional_token(token)
+    # api_user = await decode_optional_token(token)
 
     template = env.get_template("artifacts/artifact_list.html")
 
@@ -196,7 +197,7 @@ async def list_artifacts(
     prev_page = current_page_index if current_page_index > 0 else None
     next_page = current_page_index + 2 if current_page_index < max_index else None
 
-    extra_url = f"?token={token}" if token is not None else ""
+    # extra_url = f"?token={token}" if token is not None else ""
     # Info for rendering
     infos = {
         "app_version": app.version,
@@ -209,7 +210,7 @@ async def list_artifacts(
         "prev_page": prev_page,
         "next_page": next_page,
         "search": search,
-        "extra_url": extra_url,
+        # "extra_url": extra_url,
     }
 
     html_content = template.render(infos)
@@ -221,7 +222,6 @@ async def get_artifact(
     request: Request,
     internal_id: int,
     debug: bool = False,
-    # token: str | None = None,
     api_user: ApiUser = Depends(get_bearer_token),
 ):
 
@@ -243,7 +243,6 @@ async def get_artifact(
             status_code=e.response.status_code,
         )
 
-    # extra_url = f"?token={token}" if token is not None else ""
     infos = {
         "app_version": app.version,
         "now": datetime.datetime.now(),
@@ -253,7 +252,6 @@ async def get_artifact(
         "debug": debug,
         "visibility": "public",  # public, author, project,
         "artifact": data,
-        # "extra_url": extra_url,
     }
 
     if api_user and api_user.email.lower() == data.get("createdBy", "").lower():
@@ -266,12 +264,12 @@ async def get_artifact(
 
 
 @app.get("/artifacts/create/", response_class=HTMLResponse)
-async def create_artifact(debug: bool = False, token: str | None = None):
-    api_user = await decode_optional_token(token)
-
+async def create_artifact(
+    debug: bool = False,
+    api_user: ApiUser = Depends(get_bearer_token),
+):
     template = env.get_template("artifacts/artifact_create.html")
 
-    extra_url = f"?token={token}" if token is not None else ""
     infos = {
         "app_version": app.version,
         "now": datetime.datetime.now(),
@@ -280,7 +278,6 @@ async def create_artifact(debug: bool = False, token: str | None = None):
         "show_authors": True,
         "debug": debug,
         "visibility": "public",  # public, author, project,
-        "extra_url": extra_url,
     }
 
     html_content = template.render(infos)
@@ -292,20 +289,20 @@ async def create_artifact(debug: bool = False, token: str | None = None):
 async def submit_artifact(
     name: Annotated[str, Form()],
     description: Annotated[str, Form()],
-    token: str | None = None,
     keywords: Annotated[list[str], Form()] = [],
     scientificDomains: Annotated[list[str], Form()] = [],
     scientificSubdomains: Annotated[list[str], Form()] = [],
     file: UploadFile | None = File(default=None),
     debug: bool = False,
+    api_user: ApiUser = Depends(get_bearer_token),
 ):
     if file is not None and not file.filename:
         file = None
 
-    api_user = await decode_optional_token(token)
+    # api_user = await decode_optional_token(token)
     if not api_user or not api_user.is_authenticated:
         raise HTTPException(status_code=401, detail="Unauthorized")
-    assert token is not None
+    # assert token is not None
 
     form_data = ArtifactCreateRequest(
         name=name,
@@ -366,7 +363,9 @@ async def submit_artifact(
     body["dateTimeStart"] = _now
     body["dateTimeEnd"] = _now
 
-    internal_id = await upload_digital_object(token=token, file=file, metadata=body)
+    internal_id = await upload_digital_object(
+        token=api_user.token, file=file, metadata=body
+    )
 
     # XXX: 303 to force a GET redirect
     return RedirectResponse(
