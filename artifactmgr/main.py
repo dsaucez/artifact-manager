@@ -369,6 +369,4 @@ async def submit_artifact(
     )
 
     # XXX: 303 to force a GET redirect
-    return RedirectResponse(
-        url=f"/artifacts/{internal_id}?token={token}", status_code=303
-    )
+    return RedirectResponse(url=f"/artifacts/{internal_id}", status_code=303)
