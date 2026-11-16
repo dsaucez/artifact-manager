@@ -35,10 +35,10 @@ app.mount("/static", StaticFiles(directory="server/static"), name="static")
 bearer_scheme = HTTPBearer()
 
 
-def get_bearer_token(
+async def get_bearer_token(
     credentials: HTTPAuthorizationCredentials = Depends(bearer_scheme),
 ) -> ApiUser:
-    api_user = decode_optional_token(credentials.credentials)
+    api_user = await decode_optional_token(credentials.credentials)
     return api_user
 
 
