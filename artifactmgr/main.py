@@ -192,8 +192,7 @@ async def login(
 async def logout(
     api_user: ApiUser = Depends(get_bearer_token),
 ):
-
-    return HTMLResponse(content=f"<html><body>Logout successful</body></html>")
+    return RedirectResponse(url="/", status_code=307)
 
 
 @app.get("/artifacts/", response_class=HTMLResponse)

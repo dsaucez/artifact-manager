@@ -21,7 +21,7 @@
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav me-auto order-0">
             <li class="nav-item">
-                <a class="nav-link" href="/artifacts/{{extra_url}}">ArtifactXXXXXXs</a>
+                <a class="nav-link" href="/artifacts/{{extra_url}}">Artifacts</a>
             </li>
             <!-- <li class="nav-item">
                 <a class="nav-link" href="{ % url 'author_list' %}">Authors</a>
@@ -88,9 +88,8 @@
             </div>
         </div>
         <div class="navbar-nav nav-item order-5">
-            ICIIIIIII
             {% if api_user.is_authenticated %}
-                <a class="nav-link" href="/oidc/logout">
+                <a class="nav-link" href="/oidc/callback?logout=https%3A%2F%2Fartifacts.theblueprintfactory.org%2Foidc%2Flogout">
                     <button class="btn btn-outline-light"
                             title="Sign out"
                             data-bs-toggle="tooltip" data-bs-placement="bottom">
