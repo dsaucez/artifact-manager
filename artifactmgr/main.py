@@ -211,12 +211,16 @@ async def list_artifacts(
 
 @app.get("/artifacts/{internal_id}", response_class=HTMLResponse)
 async def get_artifact(
+    request: Request,
     internal_id: int,
     debug: bool = False,
     token: str | None = None,
 ):
     api_user = await decode_optional_token(token)
     template = env.get_template("artifacts/artifact_detail.html")
+
+    for name, value in request.headers.items():
+        print(f"{name}: {value}")
 
     try:
         data = await get_digital_object(internal_id=internal_id)
